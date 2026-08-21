@@ -29,8 +29,7 @@ func (m *Manager) Complete(ctx context.Context, id string, parts []int) (meta.Up
 		}
 	}
 	if len(missing) > 0 {
-
-		return meta.UploadMeta{}, nil, "", fmt.Errorf("missing parts %v", missing)
+		return meta.UploadMeta{}, nil, "", errs.WrapIncomplete(fmt.Sprintf("missing parts %v", missing))
 	}
 	var merged []byte
 	var etags []string

@@ -7,8 +7,7 @@ import (
 
 // WrapIncomplete 保证 errors.Is(_, ErrIncompleteParts) 成立。
 func WrapIncomplete(detail string) error {
-
-	return fmt.Errorf("incomplete parts: %s", detail)
+	return fmt.Errorf("%w: %s", ErrIncompleteParts, detail)
 }
 
 // WrapPersist 包装持久化失败。
