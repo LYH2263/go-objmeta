@@ -64,11 +64,18 @@ func (e *Engine) Filter(all []meta.ObjectMeta, opt Options) Result {
 		if len(entries)+len(e.prefs) >= limit {
 			return Result{
 				Entries:        entries,
-				CommonPrefixes: e.prefs,
+				CommonPrefixes: cloneStrings(e.prefs),
 				NextCursor:     m.Key,
 				Truncated:      true,
 			}
 		}
 	}
-	return Result{Entries: entries, CommonPrefixes: e.prefs}
+	return Result{Entries: entries, CommonPrefixes: cloneStrings(e.prefs)}
+}
+
+// cloneStrings 深拷贝 e.prefs；防止调用方改写污染 Engine 复用缓冲。
+func cloneStrings(src []string) []string {
+	dst := make([]string, len(src))
+	copy(dst, src)
+	return dst
 }

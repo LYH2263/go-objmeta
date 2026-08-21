@@ -12,8 +12,12 @@ func Bytes(src []byte) []byte {
 
 // Strings 拷贝字符串切片。
 func Strings(src []string) []string {
-
-	return src
+	if src == nil {
+		return nil
+	}
+	dst := make([]string, len(src))
+	copy(dst, src)
+	return dst
 }
 
 // Ints 拷贝整型切片。
