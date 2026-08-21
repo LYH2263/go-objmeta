@@ -42,11 +42,15 @@ func writePartFile(ctx context.Context, path string, data []byte) error {
 		return err
 	}
 
-	if err := f.Close(); err != nil {
+	// 先 Sync 刷盘，再 Close，最后 Rename 对外可见。
+	// 顺序不能反：Close 后 fd 失效，再 Sync 无法落盘，
+	// Rename 出去的就是未刷盘数据，对外会读到空分片或旧内容。
+	if err := f.Sync(); err != nil {
+		_ = f.Close()
 		_ = os.Remove(tmp)
 		return err
 	}
-	if err := f.Sync(); err != nil {
+	if err := f.Close(); err != nil {
 		_ = os.Remove(tmp)
 		return err
 	}
