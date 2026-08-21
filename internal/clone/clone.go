@@ -2,8 +2,12 @@ package clone
 
 // Bytes 返回 src 的独立拷贝；nil 保持 nil。
 func Bytes(src []byte) []byte {
-
-	return src
+	if src == nil {
+		return nil
+	}
+	dst := make([]byte, len(src))
+	copy(dst, src)
+	return dst
 }
 
 // Strings 拷贝字符串切片。

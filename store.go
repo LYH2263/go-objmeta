@@ -155,7 +155,9 @@ func (s *Store) PutBytes(ctx context.Context, key string, data []byte, opt PutOp
 		return ObjectInfo{}, errs.WrapCanceled(err)
 	}
 
-	owned := data
+	// data 是调用方切片，必须深拷贝：putOwnedLocked 会把 owned 存入 s.hot 热缓存，
+	// 若仅复制切片头，调用方事后改字节即串味到热缓存与 Get 结果。
+	owned := clone.Bytes(data)
 	return s.putOwnedLocked(ctx, key, owned, opt)
 }
 
