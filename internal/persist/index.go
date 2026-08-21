@@ -59,15 +59,34 @@ func (idx *Index) Put(m meta.ObjectMeta) error {
 	idx.mu.Lock()
 	defer idx.mu.Unlock()
 
+	// 先记旧值，flush 失败时回滚，使内存与磁盘（未刷新）保持一致。
+	prev, existed := idx.data[m.Key]
 	idx.data[m.Key] = meta.CloneMeta(m)
-	return idx.flushLocked()
+	if err := idx.flushLocked(); err != nil {
+		if existed {
+			idx.data[m.Key] = prev
+		} else {
+			delete(idx.data, m.Key)
+		}
+		return err
+	}
+	return nil
 }
 
 func (idx *Index) Delete(key string) error {
 	idx.mu.Lock()
 	defer idx.mu.Unlock()
+
+	// 先记旧值，flush 失败时回滚，使内存与磁盘（未刷新）保持一致。
+	prev, existed := idx.data[key]
 	delete(idx.data, key)
-	return idx.flushLocked()
+	if err := idx.flushLocked(); err != nil {
+		if existed {
+			idx.data[key] = prev
+		}
+		return err
+	}
+	return nil
 }
 
 func (idx *Index) Snapshot() []meta.ObjectMeta {

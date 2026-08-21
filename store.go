@@ -178,7 +178,8 @@ func (s *Store) putOwnedLocked(ctx context.Context, key string, owned []byte, op
 		return ObjectInfo{}, err
 	}
 	if err := s.index.Put(m); err != nil {
-
+		// 索引 flush 失败：已落盘的对象成为孤儿，必须删除；内存索引已由 Index.Put 回滚。
+		_ = s.backend.RemoveObject(key)
 		return ObjectInfo{}, err
 	}
 	s.hot[key] = owned
