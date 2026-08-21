@@ -127,6 +127,9 @@ func (s *Store) Put(ctx context.Context, key string, body io.Reader, opt PutOpti
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	if err := s.guard(); err != nil {
+		return ObjectInfo{}, err
+	}
 	if err := validate.Key(key); err != nil {
 		return ObjectInfo{}, err
 	}
