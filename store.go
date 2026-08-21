@@ -165,7 +165,7 @@ func (s *Store) putOwnedLocked(ctx context.Context, key string, owned []byte, op
 		return ObjectInfo{}, err
 	}
 
-	um := opt.UserMeta
+	um := clone.StringMap(opt.UserMeta)
 	m := meta.ObjectMeta{
 		Key:          key,
 		Size:         int64(len(owned)),

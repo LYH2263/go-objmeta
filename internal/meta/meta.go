@@ -1,6 +1,10 @@
 package meta
 
-import "time"
+import (
+	"time"
+
+	"example.com/objmeta/internal/clone"
+)
 
 // ObjectMeta 持久化对象元数据。
 type ObjectMeta struct {
@@ -29,8 +33,8 @@ type PartMeta struct {
 	ETag   string
 }
 
-// CloneMeta 深拷贝 ObjectMeta。
+// CloneMeta 深拷贝 ObjectMeta；UserMeta map 与原对象隔离。
 func CloneMeta(m ObjectMeta) ObjectMeta {
-
+	m.UserMeta = clone.StringMap(m.UserMeta)
 	return m
 }
