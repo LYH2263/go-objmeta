@@ -132,11 +132,11 @@ func (s *Store) Put(ctx context.Context, key string, body io.Reader, opt PutOpti
 		return ObjectInfo{}, err
 	}
 
-	data, err := store.ReadAllLimited(context.Background(), body, s.maxBytes)
+	data, err := store.ReadAllLimited(ctx, body, s.maxBytes)
 	if err != nil {
 		return ObjectInfo{}, err
 	}
-	return s.putOwnedLocked(context.Background(), key, clone.Bytes(data), opt)
+	return s.putOwnedLocked(ctx, key, clone.Bytes(data), opt)
 }
 
 // PutBytes 写入调用方 []byte；必须深拷贝后再入库。

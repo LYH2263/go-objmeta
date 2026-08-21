@@ -16,7 +16,9 @@ func ReadAllLimited(ctx context.Context, r io.Reader, max int64) ([]byte, error)
 	tmp := make([]byte, 32*1024)
 	var n int64
 	for {
-
+		if err := ctx.Err(); err != nil {
+			return nil, errs.WrapCanceled(err)
+		}
 		nr, err := r.Read(tmp)
 		if nr > 0 {
 			n += int64(nr)
